@@ -2,9 +2,10 @@ package com.funapps.weather.models
 
 import cats.effect.Concurrent
 import io.circe.Decoder.Result
+import io.circe.generic.semiauto.deriveEncoder
 import io.circe.{Decoder, HCursor}
-import org.http4s.EntityDecoder
-import org.http4s.circe.jsonOf
+import org.http4s.{EntityDecoder, EntityEncoder}
+import org.http4s.circe.{jsonEncoderOf, jsonOf}
 
 case class BasicWeatherStats(
   temp: Option[Double],
@@ -34,5 +35,7 @@ object BasicWeatherStats {
         tempMax = tempMax,
       )
   }
+  implicit val encoder = deriveEncoder[BasicWeatherStats]
   implicit def entityDecoder[F[_] : Concurrent]: EntityDecoder[F, BasicWeatherStats] = jsonOf
+  implicit def entityEncoder[F[_]]: EntityEncoder[F, BasicWeatherStats] = jsonEncoderOf
 }

@@ -17,30 +17,42 @@ object WeatherRoutes extends StrictLogging {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
+    def logAndInternalServerError(e: Throwable): F[Response[F]] = {
+      logger.error(e.getMessage)
+      logger.error(e.getStackTrace.mkString("\n"))
+      InternalServerError()
+    }
+
+    def handleErrors(res: F[Response[F]]): F[Response[F]] = res.handleErrorWith {
+      case e: IllegalStateException => logAndInternalServerError(e)
+      case openWeatherError: OpenWeatherService.OpenWeatherError => logAndInternalServerError(openWeatherError)
+      case weatherInputError: WeatherInput.WeatherInputError =>
+        logger.error(weatherInputError.getStackTrace.mkString("\n"))
+        BadRequest(weatherInputError.getMessage)
+      case e: Throwable => logAndInternalServerError(e)
+    }
+
+
     HttpRoutes.of[F] {
       case GET -> Root / "simpleweather" / latlong =>
         val res = for {
           input <- WeatherInput.fromString(latlong).liftTo[F]
           weatherResponse <- openWeatherService.weather(input)
           _ = println(weatherResponse)
-          output <- weatherService.getWeather(weatherResponse)
+          output <- weatherService.getSimpleWeather(weatherResponse)
           resp <- Ok(output)
         } yield resp
 
-        def logAndInternalServerError(e: Throwable): F[Response[F]] = {
-          logger.error(e.getMessage)
-          logger.error(e.getStackTrace.mkString("\n"))
-          InternalServerError()
-        }
+        handleErrors(res)
 
-        res.handleErrorWith {
-          case e: IllegalStateException => logAndInternalServerError(e)
-          case openWeatherError: OpenWeatherService.OpenWeatherError => logAndInternalServerError(openWeatherError)
-          case weatherInputError: WeatherInput.WeatherInputError =>
-            logger.error(weatherInputError.getStackTrace.mkString("\n"))
-            BadRequest(weatherInputError.getMessage)
-          case e: Throwable => logAndInternalServerError(e)
-        }
+      case GET -> Root / "weather" / latlong =>
+        val res = for {
+          input <- WeatherInput.fromString(latlong).liftTo[F]
+          weatherResponse <- openWeatherService.weather(input)
+          resp <- Ok(weatherResponse)
+        } yield resp
+
+        handleErrors(res)
     }
   }
 

@@ -2,22 +2,22 @@ package com.funapps.weather.services
 
 import cats.MonadThrow
 import cats.implicits._
-import com.funapps.weather.models.{BasicWeatherStats, WeatherOutput, WeatherResponse}
+import com.funapps.weather.models.{BasicWeatherStats, SimpleWeatherOutput, WeatherResponse}
 
 trait WeatherService[F[_]] {
 
-  def getWeather(
+  def getSimpleWeather(
     weatherResponse: WeatherResponse
-  ): F[WeatherOutput]
+  ): F[SimpleWeatherOutput]
 
 }
 
 object WeatherService {
-  def build[F[_]: MonadThrow]: WeatherService[F] = new WeatherServiceImpl[F]
+  def build[F[_] : MonadThrow]: WeatherService[F] = new WeatherServiceImpl[F]
 
 }
 
-class WeatherServiceImpl[F[_]: MonadThrow] extends WeatherService[F] {
+class WeatherServiceImpl[F[_] : MonadThrow] extends WeatherService[F] {
 
   // based on fahrenheit temps. this isn't ideal, but this is just a bit of a toy
   private def convertWeatherToSummary(basicWeatherStats: BasicWeatherStats): String = basicWeatherStats.feelsLikeTemp.map { feels_like =>
@@ -28,8 +28,8 @@ class WeatherServiceImpl[F[_]: MonadThrow] extends WeatherService[F] {
     else "Coat Weather"
   }.getOrElse("No Weather")
 
-  override def getWeather(weatherResponse: WeatherResponse): F[WeatherOutput] = {
-    WeatherOutput(
+  override def getSimpleWeather(weatherResponse: WeatherResponse): F[SimpleWeatherOutput] = {
+    SimpleWeatherOutput(
       weatherCondition = weatherResponse.weather.headOption.map(_.main),
       temperatureSummary = convertWeatherToSummary(weatherResponse.main),
       temp = weatherResponse.main.temp,

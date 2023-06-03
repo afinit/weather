@@ -12,7 +12,7 @@ object WeatherServer {
     for {
       client <- EmberClientBuilder.default[F].build
 
-      openWeatherService = OpenWeatherService.build(client, openWeatherAppId)
+      openWeatherService <- OpenWeatherService.build(client, openWeatherAppId)
       weatherService = WeatherService.build[F]
 
       httpApp = (

@@ -6,8 +6,10 @@ import org.http4s.{EntityDecoder, EntityEncoder}
 import org.http4s.circe.{jsonEncoderOf, jsonOf}
 
 case class WeatherResponse(
+  coord: Coordinates,
   weather: Vector[WeatherSummary],
-  main: BasicWeatherStats
+  main: BasicWeatherStats,
+  wind: WindData
 )
 
 object WeatherResponse {

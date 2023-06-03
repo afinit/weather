@@ -3,7 +3,7 @@ package com.funapps.weather.services
 import cats.effect.Temporal
 import cats.effect.kernel.Resource
 import cats.implicits._
-import com.funapps.weather.models.{WeatherInput, WeatherResponse}
+import com.funapps.weather.models.{Coordinates, WeatherResponse}
 import com.typesafe.scalalogging.StrictLogging
 import io.chrisdavenport.mules.{MemoryCache, TimeSpec}
 import org.http4s.UriTemplate._
@@ -16,7 +16,7 @@ import scala.concurrent.duration._
 
 trait OpenWeatherService[F[_]] {
 
-  def weather(weatherInput: WeatherInput): F[WeatherResponse]
+  def weather(weatherInput: Coordinates): F[WeatherResponse]
 
 }
 
@@ -47,7 +47,7 @@ class OpenWeatherServiceImpl[F[_] : Temporal](
 
   import dsl._
 
-  private def callOpenWeatherWeather(weatherInput: WeatherInput): F[WeatherResponse] =
+  private def callOpenWeatherWeather(weatherInput: Coordinates): F[WeatherResponse] =
     for {
       uri <-
         UriTemplate(
@@ -74,7 +74,7 @@ class OpenWeatherServiceImpl[F[_] : Temporal](
       _ = logger.info(s"retrieved new weather: $response")
     } yield response
 
-  override def weather(weatherInput: WeatherInput): F[WeatherResponse] = for {
+  override def weather(weatherInput: Coordinates): F[WeatherResponse] = for {
     cacheResult <- cache.lookup(weatherInput.toString)
     result <- cacheResult.map(_.pure[F]).getOrElse(callOpenWeatherWeather(weatherInput))
   } yield result

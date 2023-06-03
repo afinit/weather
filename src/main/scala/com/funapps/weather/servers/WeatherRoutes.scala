@@ -2,7 +2,7 @@ package com.funapps.weather.servers
 
 import cats.effect.Concurrent
 import cats.implicits._
-import com.funapps.weather.models.WeatherInput
+import com.funapps.weather.models.Coordinates
 import com.funapps.weather.services.{OpenWeatherService, WeatherService}
 import com.typesafe.scalalogging.StrictLogging
 import org.http4s.{HttpRoutes, Response}
@@ -26,7 +26,7 @@ object WeatherRoutes extends StrictLogging {
     def handleErrors(res: F[Response[F]]): F[Response[F]] = res.handleErrorWith {
       case e: IllegalStateException => logAndInternalServerError(e)
       case openWeatherError: OpenWeatherService.OpenWeatherError => logAndInternalServerError(openWeatherError)
-      case weatherInputError: WeatherInput.WeatherInputError =>
+      case weatherInputError: Coordinates.WeatherInputError =>
         logger.error(weatherInputError.getStackTrace.mkString("\n"))
         BadRequest(weatherInputError.getMessage)
       case e: Throwable => logAndInternalServerError(e)
@@ -36,7 +36,7 @@ object WeatherRoutes extends StrictLogging {
     HttpRoutes.of[F] {
       case GET -> Root / "simpleweather" / latlong =>
         val res = for {
-          input <- WeatherInput.fromString(latlong).liftTo[F]
+          input <- Coordinates.fromString(latlong).liftTo[F]
           weatherResponse <- openWeatherService.weather(input)
           _ = println(weatherResponse)
           output <- weatherService.getSimpleWeather(weatherResponse)
@@ -47,7 +47,7 @@ object WeatherRoutes extends StrictLogging {
 
       case GET -> Root / "weather" / latlong =>
         val res = for {
-          input <- WeatherInput.fromString(latlong).liftTo[F]
+          input <- Coordinates.fromString(latlong).liftTo[F]
           weatherResponse <- openWeatherService.weather(input)
           resp <- Ok(weatherResponse)
         } yield resp

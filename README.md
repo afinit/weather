@@ -31,11 +31,9 @@ For more detailed information about the weather, this endpoint
 will return part of the data included in this API:
 https://openweathermap.org/current
 
-Provide the lat,long as part of the URL like this.
-(TODO: maybe this should be a query param instead. Notes
-for future me)
+Provide the lat,long as a query param like this:
 ```
-GET localhost:8080/weather/38.624399,-90.184242
+GET localhost:8080/weather?latlong=38.624399,-90.184242
 ```
 
 ### Simple Weather
@@ -51,11 +49,9 @@ This API provides a processed version of the above data.
 }
 ```
 
-Provide the lat,long as part of the URL like this.
-(TODO: maybe this should be a query param instead. Notes
-for future me)
+Provide the lat,long as a query param like this:
 ```
-GET localhost:8080/simpleweather/38.624399,-90.184242
+GET localhost:8080/simpleweather?latlong=38.624399,-90.184242
 ```
 
 

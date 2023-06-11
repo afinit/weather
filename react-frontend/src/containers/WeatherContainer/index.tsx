@@ -38,7 +38,7 @@ export default function WeatherContainer(props: Props) {
 
     React.useEffect(() => {
         if (props.coordsDisplay) {
-            fetch(`http://localhost:8080/weather/${props.coordsDisplay}`, {
+            fetch(`http://localhost:8080/weather?latlong=${props.coordsDisplay}`, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {

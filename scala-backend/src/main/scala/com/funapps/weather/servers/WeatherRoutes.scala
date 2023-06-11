@@ -17,6 +17,8 @@ object WeatherRoutes extends StrictLogging {
     val dsl = new Http4sDsl[F] {}
     import dsl._
 
+    object LatLongQueryParam extends QueryParamDecoderMatcher[String]("latlong")
+
     def logAndInternalServerError(e: Throwable): F[Response[F]] = {
       logger.error(e.getMessage)
       logger.error(e.getStackTrace.mkString("\n"))
@@ -34,7 +36,7 @@ object WeatherRoutes extends StrictLogging {
 
 
     HttpRoutes.of[F] {
-      case GET -> Root / "simpleweather" / latlong =>
+      case GET -> Root / "simpleweather" :? LatLongQueryParam(latlong) =>
         val res = for {
           input <- Coordinates.fromString(latlong).liftTo[F]
           weatherResponse <- openWeatherService.weather(input)
@@ -45,7 +47,7 @@ object WeatherRoutes extends StrictLogging {
 
         handleErrors(res)
 
-      case GET -> Root / "weather" / latlong =>
+      case GET -> Root / "weather" :? LatLongQueryParam(latlong) =>
         val res = for {
           input <- Coordinates.fromString(latlong).liftTo[F]
           weatherResponse <- openWeatherService.weather(input)

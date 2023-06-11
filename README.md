@@ -11,7 +11,7 @@ you with an appid.
 
 Here is some information about it: https://openweathermap.org/appid
 
-## Running the app
+## Running the Backend App
 
 From the root of the scala project, run this replacing
 `<APPID>` with the appid:
@@ -56,4 +56,14 @@ Provide the lat,long as part of the URL like this.
 for future me)
 ```
 GET localhost:8080/simpleweather/38.624399,-90.184242
+```
+
+
+## Running the Frontend App
+
+From the root of the react project
+
+```bash
+npm install
+npm start
 ```

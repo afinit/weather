@@ -1,29 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 import { Form, Segment, Button } from "semantic-ui-react";
 import "./index.css";
 
 export interface Props {
     coords: string;
-    setCoords: React.Dispatch<React.SetStateAction<string>>;
+    error: string;
 }
-
-
 
 export default function QueryForm(props: Props) {
 
-    const [error, setError] = useState('');
-    const [localCoords, setLocalCoords] = useState(props.coords);
-
-    const handleSubmit = () => {
-        const regex = /^-?([1-8]?[0-9](\.[0-9]{1,6})?|90(\.0{1,6})?),\s*-?(180(\.0{1,6})?|((1[0-7][0-9])|([1-9]?[0-9]))(\.[0-9]{1,6})?)$/;
-    
-        if (regex.test(localCoords)) {
-          setError('');
-          props.setCoords(localCoords);
-        } else {
-          setError('Invalid latitude-longitude value. Please use the format: "latitude, longitude".');
-        }
-      };
+    const [localCoords, setLocalCoords] = React.useState('');
+    React.useEffect(() => setLocalCoords(props.coords), [props.coords]);
 
     return (
         <div className="query-form">
@@ -36,8 +24,9 @@ export default function QueryForm(props: Props) {
                             value={localCoords}
                             onChange={ e => setLocalCoords(e.target.value) }
                         />
-                        {error && <div style={{ color: 'red' }}>{error}</div>}
-                        <Button onClick={handleSubmit}>Submit</Button>
+                        {props.error && <div style={{ color: 'red' }}>{props.error}</div>}
+                        <Button as={Link} to={{ search: `?latlong=${localCoords}` }}>Submit</Button>
+                        <Button as={Link} to={{ search: '' }}>Clear</Button>
                     </Form.Group>
                 </Form>
             </Segment>

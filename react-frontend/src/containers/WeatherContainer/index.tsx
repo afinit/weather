@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import WeatherDisplay from '../../components/WeatherDisplay';
 
 export interface Coordinates {
@@ -29,15 +29,16 @@ export interface WeatherResponse {
 }
 
 interface Props {
-    coords: string
+    coordsDisplay: string|null;
 }
 
 export default function WeatherContainer(props: Props) {
-    const [weatherResponse, setWeatherResponse] = useState<WeatherResponse | null>(null);
 
-    useEffect(() => {
-        if (props.coords) {
-            fetch(`http://localhost:8080/weather/${props.coords}`, {
+    const [weatherResponse, setWeatherResponse] = React.useState<WeatherResponse | null>(null);
+
+    React.useEffect(() => {
+        if (props.coordsDisplay) {
+            fetch(`http://localhost:8080/weather/${props.coordsDisplay}`, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
@@ -54,9 +55,16 @@ export default function WeatherContainer(props: Props) {
         } else {
             setWeatherResponse(null);
         }
-    }, [props.coords]);
+    }, [props.coordsDisplay]);
 
-    if (weatherResponse) return <WeatherDisplay weatherResponse={weatherResponse} />;
-    else return null;
+
+    let weatherDisplay;
+    if (weatherResponse) weatherDisplay = <WeatherDisplay weatherResponse={weatherResponse} />;
+
+    return (
+        <>
+            {weatherDisplay}
+        </>
+    );
 
 }

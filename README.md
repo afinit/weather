@@ -13,11 +13,22 @@ Here is some information about it: https://openweathermap.org/appid
 
 ## Running the Backend App
 
+### Scala Backend
+
 From the root of the scala project, run this replacing
 `<APPID>` with the appid:
 
 ```bash
 sbt "run <APPID>"
+```
+
+### Python Django Backend
+
+From the root of the django-backend directory, run this replacing
+`<APPID>` with the appid:
+```bash
+export OPENWEATHERMAP_API_KEY=<APPID>
+python manage.py runserver 8080
 ```
 
 ## Hitting the endpoints

@@ -31,6 +31,16 @@ export OPENWEATHERMAP_API_KEY=<APPID>
 python manage.py runserver 8080
 ```
 
+### Python FastAPI Backend
+
+From the root of the django-backend directory, run this replacing
+`<APPID>` with the appid:
+```bash
+export OPENWEATHERMAP_API_KEY=<APPID>
+uvicorn app.main:app --reload --port 8080
+```
+
+
 ## Hitting the endpoints
 
 Currently, there are 2 endpoints, and they are both
